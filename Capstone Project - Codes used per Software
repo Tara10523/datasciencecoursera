@@ -1,0 +1,64 @@
+--### In BigQuery Importort Excel raw data to - Filter data to only include non PII columns
+
+
+SELECT Username, Socialmedia, Has_2_Security_ans, age, privateaccount
+FROM User profiles form Social media
+WHERE user is not null
+
+
+--### SAve the data and Import it to SQL SSMS
+--## Update usernames to anonymous for security
+
+
+UPDATE dbo.[User profiles form Social media - Sheet1]
+SET Username = 'Anonymous'
+WHERE Username is not null;
+
+
+--### clean additional column names for visibility
+
+
+EXEC sp_rename 'dbo.[User profiles form Social media - Sheet1].HAs_2_Security_ans', 'Security_Risk', 'COLUMN';
+EXEC sp_rename 'dbo.[User profiles form Social media - Sheet1].Socialmedia', 'Network', 'COLUMN';
+EXEC sp_rename 'dbo.[User profiles form Social media - Sheet1].age', 'Age', 'COLUMN';
+EXEC sp_rename 'dbo.[User profiles form Social media - Sheet1].privateaccount', 'Page_Privacy', 'COLUMN';
+
+
+--### view work to make sure columns are properly updated
+select *
+From dbo.[User profiles form Social media - Sheet1]
+---# remove unwanted columns permanently that contain PII
+ALTER TABLE dbo.[User profiles form Social media - Sheet1]
+DROP COLUMN DOB, gender, race, new_account_in_2024;
+
+
+--### view work to make sure columns are properly updated
+select *
+From dbo.[User profiles form Social media - Sheet1]
+
+
+---##Export SQL Table and Remove null data values within Sheets with SORT/FILTER options
+
+
+
+
+
+
+---#Create visual with R studio / Tableau
+---#import new data cells that are cleaned from Nulls and properly Named to Rstudio to create a visual from your data
+Rstudio visual
+
+library(ggplot2)
+
+Username <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56)
+Network <- c("Ficebook", "XY", "INgram", "XY", "Ficebook", "INgram", "XY", "Ficebook", "TokTook", "TokTook", "XY", "Ficebook", "INgram", "INgram", "Ficebook", "Ficebook", "Ficebook", "XY", "Ficebook", "INgram", "INgram", "INgram", "TokTook", "TokTook", "XY", "Ficebook", "INgram", "INgram", "Ficebook", "XY", "INgram", "XY", "Ficebook", "INgram", "XY", "Ficebook", "TokTook", "TokTook", "XY", "Ficebook", "INgram", "INgram", "Ficebook", "Ficebook", "Ficebook", "XY", "Ficebook", "INgram", "INgram", "INgram", "TokTook", "TokTook", "XY", "Ficebook", "INgram", "INgram")
+Security_Risk <- c("yes", "no", "yes", "yes", "no", "yes", "yes", "yes", "no", "yes", "yes", "no", "no", "yes", "no", "no", "yes", "yes", "yes", "yes", "yes", "yes", "no", "yes", "yes", "no", "no", "yes", "yes", "no", "yes", "yes", "no", "yes", "yes", "yes", "no", "yes", "yes", "no", "no", "yes", "no", "no", "yes", "yes", "yes", "yes", "yes", "yes", "no", "yes", "yes", "no", "no", "yes")
+Userdata <- data.frame(Username, Network, Security_Risk)
+
+---# Create a bar plot using ggplot2
+ggplot(Userdata, aes(x = Network, fill = Security_Risk)) +
+  geom_bar() +
+  labs(title = "Social Engineering Security Risk by Network",
+       x = "Network",
+       y = "Enduser Count") +
+  theme_minimal()
