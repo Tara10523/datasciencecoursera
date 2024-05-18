@@ -6,8 +6,8 @@ FROM User profiles form Social media
 WHERE user is not null
 
 
---### SAve the data and Import it to SQL SSMS
---## Update usernames to anonymous for security
+--### Save the data and Import it to SQL SSMS
+--## Update usernames to "anonymous" for security
 
 
 UPDATE dbo.[User profiles form Social media - Sheet1]
